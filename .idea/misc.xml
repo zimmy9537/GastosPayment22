@@ -9,6 +9,8 @@
         <entry key="..\:/GastosPayment/app/src/main/res/layout/activity_paytm.xml" value="0.25" />
         <entry key="..\:/GastosPayment/app/src/main/res/layout/activity_phonepay.xml" value="0.25" />
         <entry key="..\:/GastosPayment/app/src/main/res/layout/activity_qr.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_amazon_pay.xml" value="0.2828125" />
+        <entry key="app/src/main/res/layout/activity_main2.xml" value="0.2828125" />
       </map>
     </option>
   </component>

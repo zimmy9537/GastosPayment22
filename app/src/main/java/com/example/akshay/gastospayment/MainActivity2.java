@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,19 +24,23 @@ public class MainActivity2 extends AppCompatActivity {
 
     EditText amount, note, name, upivirtualid;
     Button send;
+    TextView resultTv;
     String TAG ="main";
-    final int UPI_PAYMENT = 0;
+    final int UPI_PAYMENT = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        //upi://pay?pa=BHARATPE90718988349@yesbankltd&pn=BharatPe Merchant&cu=INR&tn=Verified Merchant
+
         send = (Button) findViewById(R.id.send);
         amount = (EditText)findViewById(R.id.amount_et);
         note = (EditText)findViewById(R.id.note);
         name = (EditText) findViewById(R.id.name);
         upivirtualid =(EditText) findViewById(R.id.upi_id);
+        resultTv=findViewById(R.id.resultTv);
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +77,7 @@ public class MainActivity2 extends AppCompatActivity {
                 .appendQueryParameter("pn", name)
                 .appendQueryParameter("mc", "")
                 //.appendQueryParameter("tid", "02125412")
-                .appendQueryParameter("tr", "25584584")
+                .appendQueryParameter("tr", "2558324584")
                 .appendQueryParameter("tn", note)
                 .appendQueryParameter("am", amount)
                 .appendQueryParameter("cu", "INR")
@@ -93,74 +98,66 @@ public class MainActivity2 extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.e("main ", "response "+resultCode );
 
-        switch (requestCode) {
-            case UPI_PAYMENT:
-                if ((RESULT_OK == resultCode) || (resultCode == 11)) {
-                    if (data != null) {
-                        String trxt = data.getStringExtra("response");
-                        Log.e("UPI", "onActivityResult: " + trxt);
-                        ArrayList<String> dataList = new ArrayList<>();
-                        dataList.add(trxt);
-                        upiPaymentDataOperation(dataList);
-                    } else {
-                        Log.e("UPI", "onActivityResult: " + "Return data is null");
-                        ArrayList<String> dataList = new ArrayList<>();
-                        dataList.add("nothing");
-                        upiPaymentDataOperation(dataList);
-                    }
+        if (requestCode == UPI_PAYMENT) {
+
+            if ((RESULT_OK == resultCode) || (resultCode == 11)) {
+                if (data != null) {
+                    String trxt = data.getStringExtra("response");
+                    Log.d("UPI", "onActivityResult: " + trxt);
+                    ArrayList<String> dataList = new ArrayList<>();
+                    dataList.add(trxt);
+                    upiPaymentDataOperation(dataList);
                 } else {
-                    //when user simply back without payment
-                    Log.e("UPI", "onActivityResult: " + "Return data is null");
+                    Log.d("UPI", "onActivityResult: " + "Return data is null");
                     ArrayList<String> dataList = new ArrayList<>();
                     dataList.add("nothing");
                     upiPaymentDataOperation(dataList);
                 }
-                break;
+            } else {
+                Log.d("UPI", "onActivityResult: " + "Return data is null"); //when user simply back without payment
+                ArrayList<String> dataList = new ArrayList<>();
+                dataList.add("nothing");
+                upiPaymentDataOperation(dataList);
+            }
         }
     }
 
     private void upiPaymentDataOperation(ArrayList<String> data) {
         if (isConnectionAvailable(MainActivity2.this)) {
             String str = data.get(0);
-            Log.e("UPIPAY", "upiPaymentDataOperation: "+str);
+            Log.d("UPIPAY", "upiPaymentDataOperation: " + str);
             String paymentCancel = "";
-            if(str == null) str = "discard";
+            if (str == null) str = "discard";
             String status = "";
             String approvalRefNo = "";
             String response[] = str.split("&");
             for (int i = 0; i < response.length; i++) {
                 String equalStr[] = response[i].split("=");
-                if(equalStr.length >= 2) {
+                if (equalStr.length >= 2) {
                     if (equalStr[0].toLowerCase().equals("Status".toLowerCase())) {
                         status = equalStr[1].toLowerCase();
-                    }
-                    else if (equalStr[0].toLowerCase().equals("ApprovalRefNo".toLowerCase()) || equalStr[0].toLowerCase().equals("txnRef".toLowerCase())) {
+                    } else if (equalStr[0].toLowerCase().equals("ApprovalRefNo".toLowerCase()) || equalStr[0].toLowerCase().equals("txnRef".toLowerCase())) {
                         approvalRefNo = equalStr[1];
                     }
-                }
-                else {
+                } else {
                     paymentCancel = "Payment cancelled by user.";
+                    resultTv.setText("Payment cancelled by user.");
                 }
             }
 
             if (status.equals("success")) {
                 //Code to handle successful transaction here.
                 Toast.makeText(MainActivity2.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
-                Log.e("UPI", "payment successfull: "+approvalRefNo);
-            }
-            else if("Payment cancelled by user.".equals(paymentCancel)) {
+                Log.d("UPI", "responseStr: " + approvalRefNo);
+                resultTv.setText("Transaction Successful");
+            } else if ("Payment cancelled by user.".equals(paymentCancel)) {
                 Toast.makeText(MainActivity2.this, "Payment cancelled by user.", Toast.LENGTH_SHORT).show();
-                Log.e("UPI", "Cancelled by user: "+approvalRefNo);
-
-            }
-            else {
+                resultTv.setText("Payment cancelled by user.");
+            } else {
                 Toast.makeText(MainActivity2.this, "Transaction failed.Please try again", Toast.LENGTH_SHORT).show();
-                Log.e("UPI", "failed payment: "+approvalRefNo);
-
+                resultTv.setText("Transaction failed.Please try again");
             }
         } else {
-            Log.e("UPI", "Internet issue: ");
-
             Toast.makeText(MainActivity2.this, "Internet connection is not available. Please check and try again", Toast.LENGTH_SHORT).show();
         }
     }

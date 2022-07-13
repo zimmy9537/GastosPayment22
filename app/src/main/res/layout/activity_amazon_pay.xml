@@ -14,7 +14,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:id="@+id/name"
-        />
+        android:text="AmazonPay Merchant"/>
 
     <EditText
         android:id="@+id/upi_id"
@@ -24,7 +24,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
         android:hint="Enter Your Amazon Pay UPI ID"
-        android:text="AMZN0000229607@apl" />
+        android:text="AMZN0000127015@apl" />
 
     <EditText
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
         android:layout_marginTop="20dp"
         android:id="@+id/amount_et"
         android:inputType="numberDecimal"
-        android:text="1"/>
+        android:text="1.00"/>
 
 
     <EditText
@@ -56,6 +56,16 @@
         android:layout_marginTop="20dp"
         android:background="#FF9800"
         android:text="Pay Now" />
+
+
+    <TextView
+        android:id="@+id/resultTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="result will be here"
+        android:layout_marginTop="20dp"
+        android:textSize="22sp"
+        android:layout_gravity="center"/>
 
 
 </LinearLayout>
